@@ -1,0 +1,42 @@
+// var host = "127.0.0.1", port = 33333;
+
+// var dgram = require( "dgram" );
+
+// var server = dgram.createSocket( "udp4" );
+
+// server.on( "message", function( msg, rinfo ) {
+//     console.log( rinfo.address + ' : ' + rinfo.port + ' - ' + msg );
+//     server.send( msg, 0, msg.length, rinfo.port, rinfo.address ); // added missing bracket
+// });
+// server.bind( port, host );
+
+
+'use strict';
+const fs = require('fs');
+const bencode = require('bencode');
+// 1
+const dgram = require('dgram');
+const Buffer = require('buffer').Buffer;
+const urlParse = require('url').parse;
+
+const torrent = bencode.decode(fs.readFileSync('puppy.torrent'));
+// 2
+const url = urlParse(torrent.announce.toString('utf8'));
+
+// 3
+const socket = dgram.createSocket('udp4');
+// 4
+const myMsg = Buffer.from('hello?', 'utf8');
+// 5
+
+socket.on( "message", function( msg, rinfo ) {
+    console.log( rinfo.address + ' : ' + rinfo.port + ' - ' + msg );
+    server.send( msg, 0, msg.length, rinfo.port, rinfo.address ); // added missing bracket
+});
+socket.bind( url.port, url.host );
+
+// socket.send(myMsg, 0, myMsg.length, url.port, url.host, () => {});
+// // 6
+// socket.on('message', msg => {
+//   console.log('message is', msg);
+// });
